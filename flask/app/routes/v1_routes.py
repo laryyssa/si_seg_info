@@ -8,7 +8,7 @@ import app.controllers.get_secrets_controller as get_secrets_controller
 gen_key_model = v1_ns.model('GenKeyModel', {
     'email': fields.String(required=True, description='Email do usuário')
 })
-@v1_ns.route("/genKey", methods=["POST"])
+@v1_ns.route("/genKey", methods=["POST","GET"])
 class genKey(Resource):
     @v1_ns.expect(gen_key_model, validate=True)
     def post(self):
