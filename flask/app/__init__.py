@@ -3,12 +3,10 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api
-from .db_manager import Db_manager
 
 from .routes.hello_routes import hello_ns
 
 api = Api()
-# db = Db_manager().get_db()
 db = SQLAlchemy()
 
 def create_app():
