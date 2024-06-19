@@ -47,8 +47,8 @@ def get_data(email):
     id = get_id(email, date)
 
     response = {
-        "key_id": token,
-        "id": id
+        "key": token,
+        "key_id": id
     }
 
     return response
