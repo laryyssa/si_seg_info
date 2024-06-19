@@ -3,6 +3,9 @@ from app.models.keys_model import Keys, db
 from datetime import datetime
 from hashlib import sha256
 import uuid
+import secrets
+from Crypto.Hash import SHA256
+import base64
 from sqlalchemy import insert
 
 def insert_key_data(email, date):
@@ -32,10 +35,20 @@ def get_id(email, date):
 
 
 def create_token(email, date):
-    input_str = email + date.strftime('%Y-%m-%d %H:%M:%S')
-    token = sha256(input_str.encode('utf-8')).hexdigest()
+    email_bytes = email.encode('utf-8')
+    date_bytes = date.strftime('%Y-%m-%d %H:%M:%S').encode('utf-8')
+    msg_bytes = email_bytes + date_bytes
+
+    sha256_hash = SHA256.new(msg_bytes).digest()
     
-    return token
+    token = base64.urlsafe_b64encode(sha256_hash).decode('utf-8')
+    
+    length = 4096
+    while len(token) < length:
+        random_bytes = secrets.token_bytes(256)
+        sha256_hash = SHA256.new(random_bytes).digest()
+        token += base64.urlsafe_b64encode(sha256_hash).decode('utf-8')
+    return token[:length]
     
 
 def get_data(email):
