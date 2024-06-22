@@ -38,8 +38,9 @@ class Secrets(Resource):
 
         data = request.get_json()
         raw = data.get("raw")
+        key_id = data.get("key_id")
 
-        secret = gen_secret_controller.create_secret(signing_key=key, raw=raw)
+        secret = gen_secret_controller.create_secret(signing_key=key, raw=raw, key_id=key_id)
         resp = {   
             "id": str(secret.id),
             "key_id": str(secret.key_id),
