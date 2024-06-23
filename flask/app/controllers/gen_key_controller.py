@@ -1,12 +1,12 @@
 from app.models.keys_model import Keys, db
 
 from datetime import datetime
-from hashlib import sha256
 import uuid
 import secrets
 from Crypto.Hash import SHA256
 import base64
-from sqlalchemy import insert
+
+DEFAULT_TOKEN_LENGTH = 32
 
 def insert_key_data(email, date):
     id = str(uuid.uuid4())
@@ -43,12 +43,11 @@ def create_token(email, date):
     
     token = base64.urlsafe_b64encode(sha256_hash).decode('utf-8')
     
-    length = 4096
-    while len(token) < length:
+    while len(token) < DEFAULT_TOKEN_LENGTH:
         random_bytes = secrets.token_bytes(256)
         sha256_hash = SHA256.new(random_bytes).digest()
         token += base64.urlsafe_b64encode(sha256_hash).decode('utf-8')
-    return token[:length]
+    return token[:DEFAULT_TOKEN_LENGTH]
     
 
 def get_data(email):
