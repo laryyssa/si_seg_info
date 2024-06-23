@@ -1,5 +1,4 @@
-from urllib import response
-from flask import request
+from flask import jsonify, request
 from flask_restx import Resource, fields
 from app.routes.declare_namespace import v1_ns
 
@@ -28,8 +27,8 @@ gen_secret_model = v1_ns.model('GenSecretModel', {
 @v1_ns.route("/secrets", methods=["GET", "POST"])
 class Secrets(Resource):
     def get(self):
-        response = get_secrets_controller.get_data()
-        return response
+        response = get_secrets_controller.get_data() if not request.args.get("key_id") else get_secrets_controller.get_secret_by_key_id(request.args.get("key_id"))
+        return jsonify(response)
     
     @v1_ns.expect(gen_secret_model, validate=True)
     def post(self):
