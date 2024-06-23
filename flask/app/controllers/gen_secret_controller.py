@@ -28,3 +28,23 @@ def create_secret(signing_key: str, raw: str, key_id: str) -> Secrets:
     db.session.commit()
     
     return new_secret
+
+def update_secret(signing_key: str, raw: str, key_id: str) -> Secrets:
+    secret = Secrets.query.filter_by(key_id=key_id).first()
+    if not secret:
+        raise ValueError("Secret não encontrado ou não existe")
+
+    # Criptografar os dados novos
+    key = signing_key.encode('utf-8')
+    iv = bytes.fromhex(secret.raw[:32])  # Usar o IV existente
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    padded_data = pad(raw.encode('utf-8'), AES.block_size)
+    encrypted_data = cipher.encrypt(padded_data)
+    encrypted_content = iv.hex() + encrypted_data.hex()
+
+    secret.raw = encrypted_content
+    secret.created_at = datetime.now()  # Atualizar a data de modificação
+    db.session.commit()
+
+    return secret
+
