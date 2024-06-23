@@ -48,3 +48,12 @@ def update_secret(signing_key: str, raw: str, key_id: str) -> Secrets:
 
     return secret
 
+def delete_secret(key_id: str):
+    secret = Secrets.query.filter_by(key_id=key_id).first()
+    if not secret:
+        raise ValueError("Secret não encontrado ou não autorizado")
+
+    db.session.delete(secret)
+    db.session.commit()
+
+    return {"message": "Secret deletado com sucesso"}

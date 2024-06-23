@@ -77,3 +77,15 @@ class SecretsUpdate(Resource):
             return resp, 201
         except ValueError as e:
             return {"message": str(e)}, 400
+
+@v1_ns.route("/secrets/<key_id>", methods=["DELETE"])
+class SecretsDelete(Resource):
+    def delete(self, key_id):
+        key = request.headers.get("key")
+        if not key or key == "":
+            return {"message": "Key não informada"}, 400
+        try:
+            resp = gen_secret_controller.delete_secret(key_id=key_id)
+            return resp, 200
+        except ValueError as e:
+            return {"message": str(e)}, 400
