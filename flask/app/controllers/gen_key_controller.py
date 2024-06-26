@@ -4,15 +4,12 @@ import uuid
 import secrets
 from Crypto.Hash import SHA256
 import base64
+import random
 
 DEFAULT_TOKEN_LENGTH = 32
 
 def insert_key_data(email, date):
     id = str(uuid.uuid4())
-
-    existing_key = Keys.query.filter_by(id=id).first()
-    if existing_key:
-        raise ValueError("Chave já existe, tente novamente.")
 
     key = Keys(
         id=id,
@@ -39,7 +36,8 @@ def get_id(email, date):
 def create_token(email, date):
     email_bytes = email.encode('utf-8')
     date_bytes = date.strftime('%Y-%m-%d %H:%M:%S').encode('utf-8')
-    random_bytes = secrets.token_bytes(256)
+    random_bytes = str(random.random()).encode('utf-8')
+    
     msg_bytes = email_bytes + date_bytes + random_bytes
 
     sha256_hash = SHA256.new(msg_bytes).digest()
