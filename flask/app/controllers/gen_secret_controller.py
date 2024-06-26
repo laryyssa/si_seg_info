@@ -29,6 +29,23 @@ def create_secret(signing_key: str, raw: str, key_id: str) -> Secrets:
     
     return new_secret
 
+def get_secret_by_key_id(id: str, key: str) -> Secrets:
+    secret = Secrets.query.filter_by(id=id).first()
+    if not secret:
+        raise ValueError("Secret não encontrado ou não autorizado")
+    
+
+    iv = bytes.fromhex(secret.raw[:32])
+    cipher = AES.new(key.encode('utf-8'), AES.MODE_CBC, iv)
+    decrypted_data = cipher.decrypt(bytes.fromhex(secret.raw[32:]))
+    raw = decrypted_data.decode('utf-8')
+    
+    secret.raw = raw
+
+    return secret
+
+
+
 def update_secret(signing_key: str, raw: str, key_id: str) -> Secrets:
     secret = Secrets.query.filter_by(key_id=key_id).first()
     if not secret:
