@@ -144,7 +144,7 @@
                     <input id="secret#${secret.id}" type="hidden" value="${secret.raw}">
                     
                     <div class="flex items-center mt-2">
-                        <button id="revealSecretBtn#${secret.id}" onclick="handleRevealSecret(${secret.id})" class="revealSecretBtn bg-green-500 text-white px-4 py-2 rounded mt-2 hover:bg-green-600">Revelar</button>
+                        <button id="revealSecretBtn#${secret.id}" onclick="handleRevealSecret('${secret.id}')" class="revealSecretBtn bg-green-500 text-white px-4 py-2 rounded mt-2 hover:bg-green-600">Revelar</button>
                     </div>
 
                     <textarea id="textArea#${secret.id}" style="display:none" class="bg-gray-200 p-2 rounded w-full mt-2" rows="3" disabled>${secret.raw}</textarea>
@@ -157,24 +157,30 @@
         async function handleRevealSecret(id) {
             const secret = document.getElementById(`secret#${id}`).value;
             const textArea = document.getElementById(`textArea#${id}`);
-            const key = document.getElementById('userKey').value
+            const key = document.getElementById('userKey').dataset.key;
 
-            const response = await fetch('/api/secrets/' + id, {
-                "method": "GET",
-                "headers": {
-                    "Content-Type": "application/json",
-                    "key": key
+            try {
+                const response = await fetch('/api/secrets/' + id, {
+                    "method": "GET",
+                    "headers": {
+                        "Content-Type": "application/json",
+                        "key": key
+                    }
+                });
+                const responseJson = await response.json();
+
+                if (responseJson.message) {
+                   throw new Error(responseJson.message);
                 }
-            });
 
-            const responseJson = await response.json();
+                textArea.value = responseJson.raw;
+                console.log(responseJson);
 
-            console.log(responseJson);
+            } catch (error) {
+                console.log(error);
+                textArea.value = 'Token inválido 🤐. Esse segredo só pode ser revelado com o Token correto.';
+            }
 
-            textArea.value = responseJson.raw;
-            
-
-            
             if (textArea.style.display === 'none') {
                 textArea.style.display = 'block';
             } else {
@@ -183,7 +189,7 @@
 
             const revealSecretBtn = document.getElementById(`revealSecretBtn#${id}`);
             revealSecretBtn.innerHTML = textArea.style.display === 'none' ? 'Revelar' : 'Shii 🤫';
-            
+
         }
 
         document.getElementById('generateKeyBtn').addEventListener('click', async function () {
@@ -208,7 +214,7 @@
             handleToggleKeyVisibility();
         });
 
-       
+
         document.getElementById('toggleKeyVisibility').addEventListener('click', function () {
             handleToggleKeyVisibility();
         });
