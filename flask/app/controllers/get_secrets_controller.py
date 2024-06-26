@@ -14,7 +14,7 @@ def filter_query():
         Secrets.created_at,
         Secrets.raw,
         Secrets.key_id
-    )
+    ).order_by(Secrets.created_at.desc())
 
     return query
 
