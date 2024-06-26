@@ -13,9 +13,9 @@ def filter_query():
     query = Secrets.query.with_entities(
         Secrets.created_at,
         Secrets.raw,
-        Secrets.key_id,
+        Secrets.key_id
         Secrets.id
-    )
+    ).order_by(Secrets.created_at.desc())
 
     return query
 
