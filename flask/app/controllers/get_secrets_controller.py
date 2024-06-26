@@ -23,3 +23,10 @@ def get_data():
     data = get_data_db(query)
 
     return data
+
+
+def get_secret_by_key_id(key_id):
+    query = filter_query().where(Secrets.key_id == key_id)
+    data = get_data_db(query)
+
+    return data
