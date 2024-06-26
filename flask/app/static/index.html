@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto UFF no Sigilo</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-blue-500 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-white text-2xl font-bold">Segredo UFFiano</h1>
+            <button id="openModalBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Sussurre um
+                Segredo</button>
+
+        </div>
+    </nav>
+    <div class="container mx-auto p-4 mt-4">
+
+        <!-- Modal -->
+        <div id="secretModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+            <div class="flex items-center justify-center min-h-screen">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                <div
+                    class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-lg w-full p-6 z-20">
+                    <h2 class="text-2xl font-bold mb-4">Criar Segredo</h2>
+                    <div class="mt-4">
+                        <label class="block text-gray-700">Seu Token:</label>
+                        <div class="flex items-center mt-2">
+                            <!-- <div id="modalKey" class="bg-gray-200 p-2 rounded flex-grow">Nenhuma Token gerada</div> -->
+                            <input type="text" id="modalKey" class="bg-gray-200 p-2 rounded flex-grow" value="******">
+                            <button id="toggleKeyVisibilityModal" class="ml-2 text-gray-600 hover:text-gray-800">
+                                <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-.874 3.057-3.803 5-7.542 5-3.739 0-6.668-1.943-7.542-5z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="modalKeyId" class="block text-gray-700">ID da Chave:</label>
+                        <input type="text" id="modalKeyId" class="bg-gray-200 p-2 rounded w-full mt-2">
+                    </div>
+                    <div class="mb-4">
+                        <label for="modalSecret" class="block text-gray-700">Segredo:</label>
+                        <textarea id="modalSecret" class="bg-gray-200 p-2 rounded w-full mt-2" maxlength="500" rows="5"
+                            placeholder="Digite seu segredo aqui (máximo de 500 caracteres)"></textarea>
+                    </div>
+                    <div class="flex justify-end">
+                        <button id="closeModalBtn"
+                            class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancelar</button>
+                        <button id="createSecretBtn"
+                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Criar Segredo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-6 mb-5">
+            <div class="mb-4">
+                <label for="email" class="block text-gray-  700">E-mail:</label>
+                <input type="email" id="email" class="bg-gray-200 p-2 rounded w-full mt-2" value="anonymous@uff.br">
+            </div>
+
+            <button id="generateKeyBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Gerar
+                Token</button>
+            <div class="mb-4 mt-4">
+                <label for="keyId" class="block text-gray-700">ID do Token:</label>
+                <input type="text" id="keyId" class="bg-gray-200 p-2 rounded w-full mt-2"
+                    placeholder="Nenhuma chave gerada" disabled>
+            </div>
+            <div class="mt-4">
+                <label class="block text-gray-700">Seu Token:</label>
+                <div class="flex items-center mt-2">
+                    <input type="text" id="userKey" class="bg-gray-200 p-2 rounded flex-grow" value="******">
+                    <button id="toggleKeyVisibility" class="ml-2 text-gray-600 hover:text-gray-800">
+                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-.874 3.057-3.803 5-7.542 5-3.739 0-6.668-1.943-7.542-5z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-6">
+
+
+            <!-- loading -->
+            <div class="flex items-center justify-center" id="loading" style="display: flex;">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0c4.418 0 8 3.582 8 8s-3.582 8-8 8V4a4 4 0 00-4 4H4z">
+                    </path>
+                </svg>
+                <span>Carregando...</span>
+            </div>
+
+            <div class="mt-8">
+                <h2 class="text-xl font-bold mb-4">Segredos UFFianos</h2>
+                <div id="secretsList" class="grid grid-cols-1 gap-4">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            await handleLoadingSecrets();
+        });
+
+        async function handleLoadingSecrets() {
+            const response = await fetch('/api/secrets');
+            const responseJson = await response.json();
+
+            const secretsList = document.getElementById('secretsList');
+            const loading = document.getElementById('loading');
+            loading.style.display = 'none';
+
+            // clear secrets list
+            secretsList.innerHTML = '';
+
+            responseJson.forEach(secret => {
+                const secretDiv = document.createElement('div');
+                secretDiv.className = 'bg-gray-200 p-4 rounded shadow';
+                const secretText = secret.raw.length > 50 ? secret.raw.substring(0, 50) + '...' : secret.raw;
+                secretDiv.innerHTML = `
+                    <h3 class="text-lg font-bold">Segredo #${secret.id}</h3>
+                    <p class="encryptedSecret">${secretText}</p>
+                    <p class="text-gray-500 text-sm mt-2">Token Used: ${secret.key_id}</p>
+                    <p class="text-gray-500 text-sm">Data: ${secret.created_at}</p>
+                    <input id="secret#${secret.id}" type="hidden" value="${secret.raw}">
+                    
+                    <div class="flex items-center mt-2">
+                        <button id="revealSecretBtn#${secret.id}" onclick="handleRevealSecret(${secret.id})" class="revealSecretBtn bg-green-500 text-white px-4 py-2 rounded mt-2 hover:bg-green-600">Revelar</button>
+                    </div>
+
+                    <textarea id="textArea#${secret.id}" style="display:none" class="bg-gray-200 p-2 rounded w-full mt-2" rows="3" disabled>${secret.raw}</textarea>
+                    
+                    
+                `;
+                secretsList.appendChild(secretDiv);
+            });
+        }
+        async function handleRevealSecret(id) {
+            const secret = document.getElementById(`secret#${id}`).value;
+            const textArea = document.getElementById(`textArea#${id}`);
+            const key = document.getElementById('userKey').value
+
+            const response = await fetch('/api/secrets/' + id, {
+                "method": "GET",
+                "headers": {
+                    "Content-Type": "application/json",
+                    "key": key
+                }
+            });
+
+            const responseJson = await response.json();
+
+            console.log(responseJson);
+
+            textArea.value = responseJson.raw;
+            
+
+            
+            if (textArea.style.display === 'none') {
+                textArea.style.display = 'block';
+            } else {
+                textArea.style.display = 'none';
+            }
+
+            const revealSecretBtn = document.getElementById(`revealSecretBtn#${id}`);
+            revealSecretBtn.innerHTML = textArea.style.display === 'none' ? 'Revelar' : 'Shii 🤫';
+            
+        }
+
+        document.getElementById('generateKeyBtn').addEventListener('click', async function () {
+            let email = document.getElementById('email').value;
+
+            const response = await fetch('/api/genKey', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: email })
+            });
+            const responseJson = await response.json();
+
+            document.getElementById('keyId').value = responseJson.key_id;
+            document.getElementById('userKey').value = responseJson.key;
+
+            document.getElementById('modalKeyId').value = responseJson.key_id;
+            document.getElementById('modalKey').value = responseJson.key;
+
+
+            handleToggleKeyVisibility();
+        });
+
+       
+        document.getElementById('toggleKeyVisibility').addEventListener('click', function () {
+            handleToggleKeyVisibility();
+        });
+        document.getElementById('toggleKeyVisibilityModal').addEventListener('click', function () {
+            handleToggleKeyVisibility({ modal: true });
+        });
+
+
+        function handleToggleKeyVisibility(data = { modal: false }) {
+            keyDiv = data.modal ? document.getElementById('modalKey') : document.getElementById('userKey');
+
+            const userKeyDiv = keyDiv;
+            const eyeIcon = document.getElementById('eyeIcon');
+            if (userKeyDiv.value === '******') {
+                userKeyDiv.value = userKeyDiv.dataset.key;
+                userKeyDiv.disabled = false;
+                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-.874 3.057-3.803 5-7.542 5-3.739 0-6.668-1.943-7.542-5z" />';
+            } else {
+                userKeyDiv.dataset.key = userKeyDiv.value;
+                userKeyDiv.value = '******';
+                userKeyDiv.disabled = true;
+                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825a3.001 3.001 0 00-3.75 0m0-13.65a3.001 3.001 0 013.75 0M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-.874 3.057-3.803 5-7.542 5-3.739 0-6.668-1.943-7.542-5z" />';
+            }
+        }
+    </script>
+
+    <script>
+        const openModalBtn = document.getElementById('openModalBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const secretModal = document.getElementById('secretModal');
+
+        openModalBtn.addEventListener('click', () => {
+            secretModal.classList.remove('hidden');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            secretModal.classList.add('hidden');
+        });
+
+        document.getElementById('createSecretBtn').addEventListener('click', async () => {
+            let key = document.getElementById('modalKey').value;
+            let keyId = document.getElementById('modalKeyId').value;
+            let secret = document.getElementById('modalSecret').value;
+
+            console.log(key, keyId, secret)
+
+            const response = await fetch('/api/secrets', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'key': key,
+
+                },
+                body: JSON.stringify({ key: key, key_id: keyId, raw: secret })
+            });
+            const responseJson = await response.json();
+
+            console.log(responseJson);
+
+            secretModal.classList.add('hidden');
+
+            handleLoadingSecrets();
+
+
+        });
+    </script>
+</body>
+
+</html>

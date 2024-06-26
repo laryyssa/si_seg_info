@@ -15,6 +15,7 @@ gen_secret_model = v1_ns.model('GenSecretModel', {
     "raw": fields.String(required=True, description='Texto a ser criptografado')
 })
 
+
 @v1_ns.route("/genKey", methods=["POST","GET"])
 class genKey(Resource):
     @v1_ns.expect(gen_key_model, validate=True)
@@ -77,6 +78,27 @@ class SecretsUpdate(Resource):
             return resp, 201
         except ValueError as e:
             return {"message": str(e)}, 400
+
+@v1_ns.route("/secrets/<id>", methods =["GET"])
+class SecretsGetUnique(Resource):
+    def get(self, id):
+        key = request.headers.get("key")
+        if not key or key == "":
+            return {"message": "Key não informada"}, 400
+        
+        try:
+            secret = gen_secret_controller.get_secret_by_key_id(id, key)
+            resp = {
+                "id": str(secret.id),
+                "key_id": str(secret.key_id),
+                "created_at": secret.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "raw": secret.raw
+            }
+
+            return resp, 200
+        except ValueError as e:
+            return {"message": str(e)}, 400
+
 
 @v1_ns.route("/secrets/<key_id>", methods=["DELETE"])
 class SecretsDelete(Resource):
