@@ -39,7 +39,7 @@ def get_id(email, date):
 def create_token(email, date):
     email_bytes = email.encode('utf-8')
     date_bytes = date.strftime('%Y-%m-%d %H:%M:%S').encode('utf-8')
-    msg_bytes = email_bytes + date_bytes
+    msg_bytes = email_bytes + date_bytes + random_bytes
 
     sha256_hash = SHA256.new(msg_bytes).digest()
 
